@@ -13,7 +13,7 @@ const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
 const router = express.Router();
 const path = require("path");
-
+const ImageModel = require('./models/image')
 dotenv.config();
 
 mongoose.connect(
@@ -23,7 +23,8 @@ mongoose.connect(
     console.log("Connected to MongoDB");
   }
 );
-app.use("/images", express.static(path.join(__dirname, "public/images")));
+// app.use("/images", express.static(path.join(__dirname, "public/images")));
+app.use(express.static(path.resolve('../api')));
 
 //middleware
 app.use(express.json());
@@ -31,23 +32,34 @@ app.use(helmet());
 app.use(morgan("common"));
 app.use(cors())
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images");
+var storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+      cb(null, './public/images')
   },
-  filename: (req, file, cb) => {
-    cb(null, req.body.name);
-  },
-});
 
-const upload = multer({ storage: storage });
-app.post("/api/upload", upload.single("file"), (req, res) => {
-  try {
-    return res.status(200).json("File uploded successfully");
-  } catch (error) {
-    console.error(error);
+  filename: function (req, file, cb) {
+      cb(null, file.originalname)
   }
-});
+}) 
+
+var upload = multer({
+  storage: storage,
+})
+
+app.post("/api/upload", upload.single('file'),async function (req, res, next) {
+  
+      const imageInfo = await new ImageModel({
+          image: req.file.path
+      })
+      
+      imageInfo.save()
+      .then(result => {
+          res.status(200).send(result)
+      }).catch(err => {
+          console.log(err);
+      })
+  
+})
 
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);

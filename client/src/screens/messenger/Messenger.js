@@ -17,11 +17,13 @@ export default function Messenger() {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const socket = useRef();
+  const [ picture, setPicture ] = useState("")
+  const [ type, setType ] = useState("text")
 
     
   const userSignin = useSelector(state=>state.userSignin)
   const {userInfo}= userSignin
-console.log(userInfo);
+  console.log(userInfo);
   const scrollRef = useRef();
 
   useEffect(() => {
@@ -79,6 +81,7 @@ console.log(userInfo);
     const message = {
       sender: userInfo?.data?._id,
       text: newMessage,
+      type: type,
       conversationId: currentChat._id,
     };
 
@@ -104,6 +107,23 @@ console.log(userInfo);
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  let photo =  new FormData();
+  photo.append('file', picture);
+
+  if (picture) {
+    uploadFile(photo)//dispatch(UploadMedia(photo))  
+  }
+
+  function uploadFile(file){
+    axios.post("http://localhost:8800/api/upload", file)
+    .then(res => {
+      setNewMessage(res.data.image)
+      setType("file")
+    })
+
+    setPicture("")
+  }
 
   return (
     <>
@@ -136,6 +156,7 @@ console.log(userInfo);
                     onChange={(e) => setNewMessage(e.target.value)}
                     value={newMessage}
                   ></textarea>
+                  <input type="file" onChange={(e) => setPicture(e.target.files[0])} />
                   <button className="chatSubmitButton" onClick={handleSubmit}>
                     Send
                   </button>

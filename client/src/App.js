@@ -2,7 +2,6 @@ import React, { useEffect, createContext, useReducer, useContext, useState } fro
 import './App.css';
 import { Route,   BrowserRouter as Router, Switch, useHistory, Redirect } from 'react-router-dom'
 import "bootstrap/dist/css/bootstrap.css"
-import Home from './screens/Home';
 import HomeScreen from './screens/Home';
 import SignupScreen from './screens/auth/Signup';
 import SigninScreen from './screens/auth/Singin';
