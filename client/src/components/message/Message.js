@@ -13,7 +13,7 @@ export default function Message({ message, own }) {
         {
           message.type === "file" ? 
           <img src={"http://localhost:8800/"+message.text} style={{width:100}} />
-          :         <p className="messageText">{message.text}</p>
+          : <p className="messageText">{message.text}</p>
         }
       </div>
       <div className="messageBottom">{format(message.createdAt)}</div>

@@ -29,9 +29,11 @@ export default function Messenger() {
   useEffect(() => {
     socket.current = io("ws://localhost:8900");
     socket.current.on("getMessage", (data) => {
+      console.log("data", data);
       setArrivalMessage({
         sender: data.senderId,
         text: data.text,
+        type: data.type,
         createdAt: Date.now(),
       });
     });
@@ -93,12 +95,15 @@ export default function Messenger() {
       senderId: userInfo?.data?._id,
       receiverId:receiverId,
       text: newMessage,
+      type: type,
+
     });
 
     try {
       const res = await axios.post("http://localhost:8800/api/messages", message);
       setMessages([...messages, res.data]);
-      setNewMessage("");
+        setNewMessage("");
+
     } catch (err) {
       console.log(err);
     }
@@ -112,7 +117,8 @@ export default function Messenger() {
   photo.append('file', picture);
 
   if (picture) {
-    uploadFile(photo)//dispatch(UploadMedia(photo))  
+    uploadFile(photo)//dispatch(UploadMedia(photo))
+    setPicture("")  
   }
 
   function uploadFile(file){
@@ -120,9 +126,9 @@ export default function Messenger() {
     .then(res => {
       setNewMessage(res.data.image)
       setType("file")
+    }).catch(err => {
+      console.log(err);
     })
-
-    setPicture("")
   }
 
   return (
