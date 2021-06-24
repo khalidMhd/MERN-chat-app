@@ -46,7 +46,6 @@ const HomeScreen = ()=>{
                                 <button className="btn btn-info btn-sm" disabled>Friends</button>
                                 :
                                 <button className="btn btn-info btn-sm" onClick={() => addConversationHandler(user?._id)}>Add To Chat</button>
-
                                 }
                             </div>
                         )}
