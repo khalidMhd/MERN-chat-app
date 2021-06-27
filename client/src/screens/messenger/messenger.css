@@ -1,0 +1,15 @@
+.messenger {
+  height: calc(100vh - 100px);
+}
+
+@media screen and (max-width: 768px) {
+  .con_user {
+    display: none;
+  }
+  .online_user {
+    display: none;
+  }
+  
+
+ 
+}
