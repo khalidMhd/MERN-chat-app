@@ -6,7 +6,7 @@ import {ALL_USER_FAIL, ALL_USER_REQUEST, ALL_USER_SUCCESS, USER_LIST_FAIL, USER_
 
 
 const instance = Axios.create({
-  baseURL: 'http://localhost:8800/api'
+  baseURL: 'https://chat-app-dem0.herokuapp.com/api'
 })
 
 const userInfo = Cookie.getJSON("userInfo") || null
