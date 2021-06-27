@@ -2,11 +2,11 @@ import "./messenger.css";
 import Conversation from "../../components/conversations/Conversation";
 import Message from "../../components/message/Message";
 import ChatOnline from "../../components/chatOnline/ChatOnline";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import axios from "axios";
 import { io } from "socket.io-client";
 import { useSelector } from "react-redux";
-import { Link } from 'react-router-dom'
+import Navbar from '../Navbar';
 
 
 export default function Messenger() {
@@ -17,12 +17,12 @@ export default function Messenger() {
   const [arrivalMessage, setArrivalMessage] = useState(null);
   const [onlineUsers, setOnlineUsers] = useState([]);
   const socket = useRef();
-  const [ picture, setPicture ] = useState("")
-  const [ type, setType ] = useState("text")
+  const [picture, setPicture] = useState("")
+  const [type, setType] = useState("text")
 
-    
-  const userSignin = useSelector(state=>state.userSignin)
-  const {userInfo}= userSignin
+
+  const userSignin = useSelector(state => state.userSignin)
+  const { userInfo } = userSignin
   console.log(userInfo);
   const scrollRef = useRef();
 
@@ -93,7 +93,7 @@ export default function Messenger() {
 
     socket.current.emit("sendMessage", {
       senderId: userInfo?.data?._id,
-      receiverId:receiverId,
+      receiverId: receiverId,
       text: newMessage,
       type: type,
 
@@ -102,7 +102,7 @@ export default function Messenger() {
     try {
       const res = await axios.post("http://localhost:8800/api/messages", message);
       setMessages([...messages, res.data]);
-        setNewMessage("");
+      setNewMessage("");
 
     } catch (err) {
       console.log(err);
@@ -113,30 +113,31 @@ export default function Messenger() {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  let photo =  new FormData();
+  let photo = new FormData();
   photo.append('file', picture);
 
   if (picture) {
     uploadFile(photo)//dispatch(UploadMedia(photo))
-    setPicture("")  
+    setPicture("")
   }
 
-  function uploadFile(file){
+  function uploadFile(file) {
     axios.post("http://localhost:8800/api/upload", file)
-    .then(res => {
-      setNewMessage(res.data.image)
-      setType("file")
-    }).catch(err => {
-      console.log(err);
-    })
+      .then(res => {
+        setNewMessage(res.data.image)
+        setType("file")
+      }).catch(err => {
+        console.log(err);
+      })
   }
 
   return (
     <>
-      <div className="messenger">
-        <div className="chatMenu">
-          <div className="chatMenuWrapper">
-            <Link to="/home" >Add frind</Link>
+      <Navbar />
+      <div className="messenger d-flex justify-content-start">
+
+        <div className="d-none d-sm-block col-sm-3">
+          <div>
             {conversations.map((c) => (
               <div onClick={() => setCurrentChat(c)}>
                 <Conversation conversation={c} currentUser={userInfo?.data} />
@@ -144,39 +145,51 @@ export default function Messenger() {
             ))}
           </div>
         </div>
-        <div className="chatBox">
-          <div className="chatBoxWrapper">
+
+        <div className="col-sm bg-light">
+          <div className="d-flex flex-column h-100">
             {currentChat ? (
               <>
-                <div className="chatBoxTop">
+                <div className=" overflow-auto">
                   {messages.map((m) => (
                     <div ref={scrollRef}>
                       <Message message={m} own={m.sender === userInfo?.data?._id} />
                     </div>
                   ))}
                 </div>
-                <div className="chatBoxBottom">
+                <div>
                   <textarea
-                    className="chatMessageInput"
+                    className="w-100"
                     placeholder="write something..."
                     onChange={(e) => setNewMessage(e.target.value)}
                     value={newMessage}
                   ></textarea>
                   <input type="file" onChange={(e) => setPicture(e.target.files[0])} />
-                  <button className="chatSubmitButton" onClick={handleSubmit}>
+                  <button className="btn btn-primary" onClick={handleSubmit}>
                     Send
                   </button>
                 </div>
               </>
             ) : (
-              <span className="noConversationText">
-                Open a conversation to start a chat.
-              </span>
+              <>
+                <span className="d-none d-sm-block h3 text-info">
+                  Open a conversation to start a chat.
+                </span>
+                <div className="d-sm-block d-lg-none d-md-none">
+                  {conversations.map((c) => (
+                    <div onClick={() => setCurrentChat(c)}>
+                      <Conversation conversation={c} currentUser={userInfo?.data} />
+                    </div>
+                  ))}
+                </div>
+              </>
+
             )}
           </div>
         </div>
-        <div className="chatOnline">
-          <div className="chatOnlineWrapper">
+
+        <div className="online_user col-sm-3">
+          <div>
             <ChatOnline
               onlineUsers={onlineUsers}
               currentId={userInfo?.data?._id}
@@ -184,6 +197,7 @@ export default function Messenger() {
             />
           </div>
         </div>
+
       </div>
     </>
   );

@@ -5,20 +5,20 @@ import { logout } from '../actions/auth';
 
 
 const Navbar = (props) => {
-  const userSignin = useSelector(state=>state.userSignin)
-  const {userInfo}= userSignin
-  
+  const userSignin = useSelector(state => state.userSignin)
+  const { userInfo } = userSignin
+
   const dispatch = useDispatch()
-   const history = useHistory()
-   
+  const history = useHistory()
+
   const handleLogout = () => {
-    if(true){
+    if (true) {
       dispatch(logout());
       history.push('/login')
     }
-   
+
   }
-  
+
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">
       <Link className="navbar-brand" to="/">Chat App</Link>
@@ -27,22 +27,24 @@ const Navbar = (props) => {
       </button>
 
       <div className="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul className="navbar-nav ml-auto">
+        <ul className="navbar-nav mr-auto">
           <li className="nav-item active">
-            {/* <Link className="nav-link" to="/">Home <span className="sr-only">(current)</span></Link> */}
+            <Link className="nav-link" to="/home">Add Friends <span className="sr-only">(current)</span></Link>
           </li>
-      
-            <li className="nav-item dropdown">
+        </ul>
+        <ul className="navbar-nav ml-auto">
+
+          <li className="nav-item dropdown">
             <Link className="nav-link dropdown-toggle" to="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              { userInfo.data?.username}
+              {userInfo.data?.username}
             </Link>
             <div className="dropdown-menu" aria-labelledby="navbarDropdown">
               <div className="dropdown-divider"></div>
-              <button className="btn btn-info" onClick={()=>handleLogout()}>Logout</button>
+              <button className="btn btn-info" onClick={() => handleLogout()}>Logout</button>
             </div>
-          </li>     
-          
-         
+          </li>
+
+
         </ul>
       </div>
     </nav>
