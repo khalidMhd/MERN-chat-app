@@ -16,7 +16,7 @@ const messageRoute = require("./routes/messages");
 const router = express.Router();
 const path = require("path");
 const ImageModel = require('./models/image')
-const PORT =process.env.PORT || 8800
+const PORT = process.env.PORT || 8800
 
 dotenv.config();
 
@@ -30,30 +30,30 @@ app.use(cors())
 
 var storage = multer.diskStorage({
   destination: function (req, file, cb) {
-      cb(null, './public/images')
+    cb(null, './public/images')
   },
 
   filename: function (req, file, cb) {
-      cb(null, file.originalname)
+    cb(null, file.originalname)
   }
-}) 
+})
 
 var upload = multer({
   storage: storage,
 })
-app.post("/api/upload", upload.single('file'),async function (req, res, next) {
-  
-      const imageInfo = await new ImageModel({
-          image: req.file.path
-      })
-      
-      imageInfo.save()
-      .then(result => {
-          res.status(200).send(result)
-      }).catch(err => {
-          console.log(err);
-      })
-  
+app.post("/api/upload", upload.single('file'), async function (req, res, next) {
+
+  const imageInfo = await new ImageModel({
+    image: req.file.path
+  })
+
+  imageInfo.save()
+    .then(result => {
+      res.status(200).send(result)
+    }).catch(err => {
+      console.log(err);
+    })
+
 })
 
 app.use("/api/auth", authRoute);
@@ -64,9 +64,9 @@ app.use("/api/messages", messageRoute);
 
 const io = require("socket.io")(server, {
   cors: {
-		origin: "*",
-		methods: [ "GET", "POST" ]
-	}
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
 });
 
 let users = [];
@@ -74,7 +74,7 @@ let users = [];
 const addUser = (userId, socketId) => {
   !users.some((user) => user.userId === userId) &&
     users.push({ userId, socketId });
-    console.log(users);
+  console.log(users);
 };
 
 const removeUser = (socketId) => {
@@ -116,16 +116,14 @@ io.on("connection", (socket) => {
 });
 
 
-if(process.env.NODE_ENV=='production'){
+if (process.env.NODE_ENV == 'production') {
   app.use(express.static('client/build'))
   const path = require('path')
   app.get("*", (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'client','build','index.html'))
+    res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'))
   });
 }
 
- 
 server.listen(PORT, () => {
   console.log("Backend server is running!");
 });
- 
